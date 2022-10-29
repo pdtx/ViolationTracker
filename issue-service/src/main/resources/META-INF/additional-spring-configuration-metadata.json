@@ -1,0 +1,29 @@
+{
+  "properties": [
+    {
+      "name": "repoPrefix",
+      "type": "java.lang.String",
+      "description": "Description for repoPrefix."
+    },
+    {
+      "name": "spring.datasource.druid.issue-tracker-benchmark.password",
+      "type": "java.lang.String",
+      "description": "Description for spring.datasource.druid.issue-tracker-benchmark.password."
+    },
+    {
+      "name": "baseRepoPath",
+      "type": "java.lang.String",
+      "description": "Description for baseRepoPath."
+    },
+    {
+      "name": "repoPath.forTest",
+      "type": "java.lang.String",
+      "description": "Description for repoPath.forTest."
+    },
+    {
+      "name": "repoPath.benchmark",
+      "type": "java.lang.String",
+      "description": "Description for repoPath.benchmark."
+    }
+  ]
+}

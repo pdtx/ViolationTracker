@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.fudan.issueservice.mapper.IssueAnalyzerMapper">
+
+    <resultMap id="issueAnalyzer" type="cn.edu.fudan.issueservice.domain.dbo.IssueAnalyzer">
+        <id property="id" column="id"/>
+        <result property="repoUuid" column="repo_uuid"/>
+        <result property="commitId" column="commit_id"/>
+        <result property="invokeResult" column="invoke_result"/>
+        <result property="analyzeResult" column="analyze_result" javaType="com.alibaba.fastjson.JSONObject"
+                typeHandler="cn.edu.fudan.issueservice.handler.JsonTypeHandler"/>
+        <result property="tool" column="tool"/>
+    </resultMap>
+
+    <insert id="insertIssueAnalyzerRecords">
+        insert into raw_issue_cache
+        (repo_uuid,
+         commit_id,
+         invoke_result,
+         tool,
+         raw_issue_num)
+        VALUES (#{repoUuid},
+                #{commitId},
+                #{invokeResult},
+                #{tool},
+                #{rawIssueNum})
+    </insert>
+
+
+    <!--    <insert id="insertIssueAnalyzerRecords">-->
+    <!--        insert into raw_issue_cache-->
+    <!--        (repo_uuid,-->
+    <!--         commit_id,-->
+    <!--         analyze_result,-->
+    <!--         invoke_result,-->
+    <!--         tool,-->
+    <!--         raw_issue_num)-->
+    <!--        VALUES (#{repoUuid},-->
+    <!--                #{commitId},-->
+    <!--                #{analyzeResult,jdbcType=OTHER,typeHandler=cn.edu.fudan.issueservice.handler.JsonTypeHandler},-->
+    <!--                #{invokeResult},-->
+    <!--                #{tool},-->
+    <!--                #{rawIssueNum})-->
+    <!--    </insert>-->
+    <update id="updateTotalIssueNum">
+        update raw_issue_cache
+        set raw_issue_num = #{num}
+        where repo_uuid = #{repoUuid}
+          and commit_id = #{commitId}
+    </update>
+
+    <select id="getIssueAnalyzeResultByRepoUuidCommitIdTool" parameterType="String" resultMap="issueAnalyzer">
+        SELECT id, repo_uuid, commit_id, analyze_result, invoke_result, tool
+        FROM raw_issue_cache
+        WHERE repo_uuid = #{repoUuid}
+          AND commit_id = #{commitId}
+          AND tool = #{tool}
+    </select>
+
+    <select id="getOneCommitTotalIssueNum" resultType="java.lang.Integer">
+        select raw_issue_num
+        from raw_issue_cache
+        where repo_uuid = #{repoUuid}
+          AND commit_id = #{commitId}
+        limit 1
+    </select>
+    <select id="getInvokeResult" resultType="java.lang.Integer">
+        select invoke_result
+        from raw_issue_cache
+        where repo_uuid = #{repoUuid}
+          AND commit_id = #{commitId}
+          AND tool = #{tool}
+    </select>
+</mapper>
