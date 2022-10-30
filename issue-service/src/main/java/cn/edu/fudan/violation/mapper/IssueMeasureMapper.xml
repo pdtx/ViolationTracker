@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.fudan.violation.mapper.IssueMeasureMapper">
+    <insert id="addOneViolation" parameterType="cn.edu.fudan.violation.domain.dbo.Violation">
+        insert into issue_measure
+        (repo_uuid, issue_uuid, start_commit, start_raw_issue_uuid,
+         end_commit, end_raw_issue_uuid, status, lifecycle, commit_num)
+        values (#{repoUuid}, #{issueUuid}, #{startCommit}, #{startRawIssueUuid}, #{endCommit},
+                #{endRawIssueUuid}, #{status}, #{lifecycle}, #{commitNum})
+    </insert>
+
+    <insert id="addViolations" parameterType="cn.edu.fudan.violation.domain.dbo.Violation">
+        insert into issue_measure
+        (repo_uuid, issue_uuid, start_commit, start_raw_issue_uuid,
+        end_commit, end_raw_issue_uuid, status, lifecycle, commit_num)
+        values
+        <foreach collection="violations" item="item" index="index" separator=",">
+            (#{repoUuid}, #{issueUuid}, #{startCommit}, #{startRawIssueUuid}, #{endCommit},
+            #{endRawIssueUuid}, #{status}, #{lifecycle}, #{commitNum})
+        </foreach>
+    </insert>
+</mapper>

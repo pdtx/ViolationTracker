@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.fudan.violation.mapper.ProjectMapper">
+
+    <resultMap id="commit" type="cn.edu.fudan.violation.domain.dbo.Commit">
+        <id property="commitId" column="commit_id"/>
+        <result property="message" column="message"/>
+        <result property="developer" column="developer"/>
+        <result property="commit_time" column="commit_time"/>
+        <result property="repoId" column="repo_id"/>
+        <result property="developerEmail" column="developer_email"/>
+    </resultMap>
+
+    <select id="getAllProjectIds" resultType="String">
+        select id
+        from project;
+    </select>
+
+
+</mapper>

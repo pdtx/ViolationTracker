@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>issue-service</artifactId>
+    <artifactId>violation</artifactId>
     <version>1.0.3</version>
     <packaging>jar</packaging>
 
-    <name>issue-service</name>
+    <name>violation</name>
     <description>Demo project for Spring Boot</description>
 
     <!-- 子模块的parent要使用顶层的父模块-->
@@ -355,7 +355,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <includeSystemScope>true</includeSystemScope>
-                    <mainClass>cn.edu.fudan.issueservice.IssueServiceApplication</mainClass>
+                    <mainClass>cn.edu.fudan.violation.ViolationApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>

@@ -20,8 +20,7 @@
     <description>ViolationTracker Parent</description>
 
     <modules>
-        <module>common</module>
-        <module>issue-service</module>
+        <module>violation</module>
 
     </modules>
 
