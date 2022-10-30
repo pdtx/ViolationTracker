@@ -33,8 +33,6 @@ public class IssueScanController {
     private static final String FAILED = "failed ";
     private static final String INVOKE_TOOL_FAILED_MESSAGE = "invoke tool:[{}] failed! message is {}";
     private ApplicationContext applicationContext;
-    private RestInterfaceManager restInterfaceManager;
-    private IssueSolved issueSolved;
 
     @PostMapping(value = {"/issue/scan"})
     public ResponseBean<String> scanStart(@RequestBody ScanRequestDTO scanRequestDTO) {
@@ -53,16 +51,6 @@ public class IssueScanController {
         }
     }
 
-    @PutMapping(value = {"/issue/update/solve-way"})
-    public ResponseBean<String> updateSolveWay(@RequestParam("repo_uuid") String repoUuid) {
-        try {
-            issueSolved.updateSolvedWay(Arrays.asList(repoUuid.split(",")));
-            return new ResponseBean<>(200, "success!", null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseBean<>(500, "update repo failed!", e.getMessage());
-        }
-    }
 
 
     @ApiOperation(value = "根据工具和repoId停止相应的扫描", notes = "@return String", httpMethod = "GET")
@@ -89,18 +77,6 @@ public class IssueScanController {
 
 
 
-
-
-    @Autowired
-    public void setIssueSolved(IssueSolved issueSolved) {
-        this.issueSolved = issueSolved;
-    }
-
-
-    @Autowired
-    public void setRestInterfaceManager(RestInterfaceManager restInterfaceManager) {
-        this.restInterfaceManager = restInterfaceManager;
-    }
 
     @Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {

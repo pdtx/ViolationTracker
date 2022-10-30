@@ -42,15 +42,6 @@ public class EsLintBaseAnalyzer extends BaseAnalyzer {
     @Value("${binHome}")
     private String binHome;
 
-    public static void main(String[] args) {
-        EsLintBaseAnalyzer esLintBaseAnalyzer = new EsLintBaseAnalyzer();
-        esLintBaseAnalyzer.setBabelEsLintPath("/Users/beethoven/Desktop/saic/IssueTracker-Master/issue-service/src/main/resources/node/babelEsLint.js");
-        esLintBaseAnalyzer.setLogHome("/Users/beethoven/Desktop/saic/issue-tracker-web");
-        esLintBaseAnalyzer.analyze("/Users/beethoven/Desktop/saic/issue-tracker-web", "test", "4f42e73bda0a80d044a013ef73da4d8af0f4c981", new JGitHelper(""));
-        JsFileParser.setBabelPath("/Users/beethoven/Desktop/saic/IssueTracker-Master/issue-service/src/main/resources/node/babelEsLint.js");
-        JsTree jsTree = new JsTree(Collections.singletonList("/Users/beethoven/Desktop/saic/issue-tracker-web/src/issue.js"), "", "");
-        esLintBaseAnalyzer.handleFieldName(24, 25, new Location(), jsTree);
-    }
 
     @Override
     public boolean invoke(String repoUuid, String repoPath, String commit) {

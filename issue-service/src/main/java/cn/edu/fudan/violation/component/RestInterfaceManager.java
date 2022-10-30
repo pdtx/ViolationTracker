@@ -1,8 +1,11 @@
 package cn.edu.fudan.violation.component;
 
 import cn.edu.fudan.violation.config.RestTemplateConfig;
+import cn.edu.fudan.violation.domain.enums.LanguageEnum;
 import cn.edu.fudan.violation.domain.enums.ToolEnum;
 
+import cn.edu.fudan.violation.util.SearchUtil;
+import cn.edu.fudan.violation.util.StringsUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -65,56 +68,21 @@ public class RestInterfaceManager  {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //todo:
     public String[] getToolsByRepoUuid(String repoUuid) {
-        if(debugMode || (language == null)){
-            return new String[]{"sonarqube"};
+        List<String> tools = new ArrayList<>();
+        if(language != null){
+            String[] languages = StringUtils.split(language, ",");
+            for(int i = 0; i < Objects.requireNonNull(languages).length; i++){
+                tools.add(ToolEnum.getToolByLanguage(languages[i]));
+            }
+            return (String [])tools.toArray();
+
         }
         return new String[]{"sonarqube"};
 
 
     }
-
-    public String getToolByRepoUuid(String repoUuid) {
-        JSONObject repoInfo = restTemplate.getForObject(projectServicePath + PROJECT_URL + repoUuid, JSONObject.class);
-        assert repoInfo != null;
-        assert repoInfo.getJSONObject(DATA) != null;
-        String language = repoInfo.getJSONObject(DATA).getString("language");
-        return ToolEnum.getToolByLanguage(language);
-    }
-
-    public JSONObject getTagDetail(String tagId, String userToken){
-        Map<String,String> map = new HashMap<>(16);
-        String urlBuilder = projectServicePath + "/tag/detail/{tagId}";
-        map.put("tagId",String.valueOf(tagId));
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(TOKEN, userToken);
-        HttpEntity<HttpHeaders> request = new HttpEntity<>(httpHeaders);
-        try{
-            ResponseEntity<JSONObject> entity = restTemplate.exchange(urlBuilder, HttpMethod.GET, request, JSONObject.class, map);
-            return JSONObject.parseObject(Objects.requireNonNull(entity.getBody()).toString());
-        }catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
-
 
 
 
@@ -146,28 +114,6 @@ public class RestInterfaceManager  {
         initSonarAuth = true;
     }
 
-    public JSONArray getSonarIssueDirectories(String componentKeys) {
-        if (!initSonarAuth) {
-            initSonarAuthorization();
-        }
-        String url = sonarServicePath + "/api/issues/search?componentKeys={componentKeys}&ps=1&p=1&facets=directories";
-        Map<String, String> map = new HashMap<>();
-        map.put("componentKeys", componentKeys);
-        try {
-            ResponseEntity<JSONObject> entity = restTemplate.exchange(url, HttpMethod.POST, sonarAuthHeader, JSONObject.class, map);
-            JSONObject sonarResult = JSONObject.parseObject(Objects.requireNonNull(entity.getBody()).toString());
-            JSONArray facets = sonarResult.getJSONArray("facets");
-            for (Object o1 : facets) {
-                if ("directories".equals(((JSONObject) o1).getString("property"))) {
-                    return ((JSONObject) o1).getJSONArray("values");
-                }
-            }
-            return null;
-        } catch (RuntimeException e) {
-            log.error("repo name : {}  ----> request sonar api failed getSonarIssueDirectories", componentKeys);
-            return null;
-        }
-    }
 
     public JSONObject getSonarIssueFileUuidsInDirectory(String componentKey, String directory) {
         if (!initSonarAuth) {
@@ -376,7 +322,6 @@ public class RestInterfaceManager  {
                 return result.getJSONObject("content");
             }
         } catch (Exception var5) {
-//            log.error(var5.getMessage());
         }
         return null;
     }

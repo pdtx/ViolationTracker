@@ -44,24 +44,12 @@ public class TscanCodeAnalyzer extends BaseAnalyzer {
     private String binHome;
     @Value("${TscanCodeLogHome}")
     private String tscanLogHome;
-    @Value("${repositoryPath}")
-    private String repositoryPath;
     private DeveloperUniqueNameUtil developerUniqueNameUtil;
     private RestInterfaceManager restInterfaceManager;
 
     @Override
     public boolean invoke(String repoUuid, String repoPath, String commit) {
-//        File baseRepoPath = new File(tscanLogHome + repoUuid + "_" + commit);
-//        if(!baseRepoPath.mkdirs()){
-//            log.error("mkdir failed repoUuid:{} commit:{}", repoUuid, commit);
-//            return false;
-//        }
-//        if(baseRepoPath.listFiles() != null &&
-//                Arrays.stream(Objects.requireNonNull(baseRepoPath.listFiles())).map(File::getName).collect(Collectors.toList())
-//                        .contains("err-" + repoUuid + "_" + commit + ".xml")){
-//            return true;
-//        }
-//        File repoFiles = new File(repoPath);
+//
         return ShUtil.executeCommand(binHome + "executeTscanCode.sh " + repoPath + " " + repoUuid + " " + commit, 50000);
     }
 
@@ -143,59 +131,6 @@ public class TscanCodeAnalyzer extends BaseAnalyzer {
         return true;
     }
 
-    private boolean parseMethodAndField(Set<String> files, JGitHelper jGitHelper, String commit) {
-        String jgitRepoPath = jGitHelper.getRepoPath();
-        String repoPrefix = jgitRepoPath.substring(repositoryPath.length() + 1);
-        Set<String> methodsAndFields = new HashSet<>();
-        String curCommit;
-        for (String file : files) {
-//            String relativePath = FileUtil.handleFileNameToRelativePath(file);
-            String relativePath;
-            if (isTotalScan) {
-                curCommit = commit;
-                relativePath = FileUtil.handleFileNameToRelativePath(file);
-            } else {
-                //rawIssue所处的commit
-                curCommit = file.substring(file.indexOf(commit) + 41, file.indexOf(commit) + 81);
-                relativePath = file.substring(file.indexOf(commit) + 82);
-//                jGitHelper.checkout(curCommit);
-            }
-            Map<String, int[]> method2LineOfEachFile = new HashMap<>(16);
-            Map<String, String> method2FullNameOfEachFile = new HashMap<>(16);
-            try {
-                String[] dirs = relativePath.split("/");
-                //去掉后缀的文件名
-                String fileName = dirs[dirs.length - 1];
-                String nameWithNoSuffix = fileName.substring(0, fileName.indexOf('.'));
-                FileNode fileNode = getFileMetric(file, repoPrefix, relativePath, nameWithNoSuffix, curCommit);
-                if (fileNode == null) {
-                    log.info("file:" + file + " repoPrefix:" + repoPrefix + " relativePath:" + relativePath);
-                    continue;
-                }
-                Map<NodeType, List<BaseNode>> children = fileNode.getChildren();
-                for (BaseNode baseNode : children.getOrDefault(NodeType.METHOD, new ArrayList<>())) {
-                    MethodNode methodNode = (MethodNode) baseNode;
-                    String methodName = methodNode.getSignature();
-                    method2LineOfEachFile.put(methodName, new int[]{methodNode.getBeginLine(), methodNode.getEndLine()});
-                    method2FullNameOfEachFile.put(methodName, methodNode.getFullName());
-                    methodsAndFields.add(methodName);
-                }
-                for (BaseNode baseNode : children.getOrDefault(NodeType.FIELD, new ArrayList<>())) {
-                    FieldNode fieldNode = (FieldNode) baseNode;
-                    String fieldName = fieldNode.getSimpleName();
-                    method2LineOfEachFile.put(fieldName, new int[]{fieldNode.getBeginLine(), fieldNode.getEndLine()});
-                    method2FullNameOfEachFile.put(fieldName, fieldNode.getFullName());
-                    methodsAndFields.add(fieldName);
-                }
-                method2Line.put(file, method2LineOfEachFile);
-                method2FullName.put(file, method2FullNameOfEachFile);
-                methodsAndFieldsInFile.put(file, methodsAndFields);
-            } catch (Exception e) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     private FileNode getFileMetric(String filePath, String repoPrefix, String relativeFilePath, String nameWithNoSuffix, String commit) {
         boolean invoke = restInterfaceManager.invokeCppParser(repoPrefix, relativeFilePath, nameWithNoSuffix, commit);

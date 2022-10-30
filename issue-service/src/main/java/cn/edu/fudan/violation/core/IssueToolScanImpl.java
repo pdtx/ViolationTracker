@@ -4,12 +4,10 @@ import cn.edu.fudan.violation.component.RestInterfaceManager;
 import cn.edu.fudan.violation.core.analyzer.AnalyzerFactory;
 import cn.edu.fudan.violation.core.analyzer.BaseAnalyzer;
 import cn.edu.fudan.violation.core.process.IssueMatcher;
-import cn.edu.fudan.violation.core.process.IssueMergeManager;
 import cn.edu.fudan.violation.core.process.IssuePersistenceManager;
 import cn.edu.fudan.violation.core.process.IssueStatistics;
 import cn.edu.fudan.violation.core.solved.IssueSolved;
 import cn.edu.fudan.violation.dao.IssueAnalyzerDao;
-import cn.edu.fudan.violation.dao.IssueDao;
 import cn.edu.fudan.violation.dao.IssueScanDao;
 import cn.edu.fudan.violation.dao.RawIssueMatchInfoDao;
 import cn.edu.fudan.violation.domain.dbo.IssueAnalyzer;
@@ -19,6 +17,7 @@ import cn.edu.fudan.violation.domain.enums.ToolEnum;
 import cn.edu.fudan.violation.mapper.SolvedRecordMapper;
 import cn.edu.fudan.violation.scan.AbstractToolScan;
 import cn.edu.fudan.violation.util.DateTimeUtil;
+import cn.edu.fudan.violation.util.FileUtil;
 import cn.edu.fudan.violation.util.JGitHelper;
 import cn.edu.fudan.violation.util.RawIssueParseUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -66,7 +65,6 @@ public class IssueToolScanImpl extends AbstractToolScan {
     private IssueAnalyzerDao issueAnalyzerDao;
 
     private IssueSolved issueSolved;
-    private IssueDao issueDao;
     private AnalyzerFactory analyzerFactory;
     private IssueMatcher issueMatcher;
     private IssueStatistics issueStatistics;
@@ -74,7 +72,6 @@ public class IssueToolScanImpl extends AbstractToolScan {
     @Value("${scanThreadNum}")
     private int initValue;
     private RestInterfaceManager rest;
-    private IssueMergeManager issueMergeManager;
     @Value("${enable.target.repo.path}")
     private boolean enableTargetRepoPath;
 
@@ -101,6 +98,7 @@ public class IssueToolScanImpl extends AbstractToolScan {
         for (int i = 0; i < initValue; i++) {
             String repoPath;
             if(enableTargetRepoPath){
+                FileUtil.copyFile(rest.getCodeServiceRepo(repoUuid), rest.getCodeServiceRepo(repoUuid) + "-" + i);
                 repoPath = rest.getCodeServiceRepo(repoUuid) + "-" + i;
             }else {
                 repoPath = rest.getCodeServiceRepo(repoUuid);
@@ -407,10 +405,6 @@ public class IssueToolScanImpl extends AbstractToolScan {
         this.issueScanDao = issueScanDao;
     }
 
-    @Autowired
-    public void setIssueDao(IssueDao issueDao) {
-        this.issueDao = issueDao;
-    }
 
     @Autowired
     public void setIssueMatcher(IssueMatcher issueMatcher) {
@@ -437,8 +431,4 @@ public class IssueToolScanImpl extends AbstractToolScan {
         this.rest = rest;
     }
 
-    @Autowired
-    public void setIssueMergeManager(IssueMergeManager issueMergeManager) {
-        this.issueMergeManager = issueMergeManager;
-    }
 }

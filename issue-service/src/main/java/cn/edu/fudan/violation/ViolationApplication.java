@@ -1,5 +1,6 @@
 package cn.edu.fudan.violation;
 
+import cn.edu.fudan.violation.core.IssueScanProcess;
 import lombok.NonNull;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.BeansException;
@@ -14,6 +15,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.util.StringUtils;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 
